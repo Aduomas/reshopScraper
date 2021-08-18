@@ -32,7 +32,7 @@ def fetch(r):
 
 def isIdentical(oldSheet, newSheet):
     if oldSheet != newSheet:
-        print("something is new!")
+        print("something has changed!")
         return False
     print("no changes found")
     return True
@@ -42,29 +42,7 @@ def exportData(sheet, fileName):
         writer = csv.writer(file)
         writer.writerows(sheet)
 
-urls = [
-    #'https://reshop.lt/collections/klaviaturos',
-    #'https://reshop.lt/collections/pelytes',
-    'https://reshop.lt/collections/ausines?limit=100'
-]
-
-file_names = [
-    #'data_keyboards.csv',
-    #'data_mouses.csv',
-    'data_headsets.csv'
-]
-
-
-session = HTMLSession()
-sheet = None
-
-for url in urls:
-    r = session.get(url)
-    r.html.render(sleep=1)
-    sheet = fetch(r)
-
-
-for file_name in file_names:
+def update(file_name):
     if os.path.isfile(file_name):
         with open(file_name, "r", encoding='utf-8-sig') as file:
             reader = csv.reader(file)
@@ -73,12 +51,34 @@ for file_name in file_names:
                 oldSheet.append(line)
             if not isIdentical(oldSheet, sheet):
                 list_difference = [item for item in sheet if item not in oldSheet]
-                #set_difference = set(sheet) - set(oldSheet)
-                #list_difference = list(set_difference)
                 if list_difference:
-                    print(list_difference[0]) # what's new only, not what's removed tho.
+                    print("added: \n", list_difference[0]) # what's new only, not what's removed tho.
                 else:
-                    print("something has been removed I guess?")
-                #exportData(sheet)
+                    list_difference = [item for item in oldSheet if item not in sheet]
+                    print("removed: \n", list_difference[0])
     else:
-        exportData(sheet, "data3.csv")
+        exportData(sheet, file_name)
+
+urls = [
+    'https://reshop.lt/collections/klaviaturos',
+    'https://reshop.lt/collections/pelytes',
+    'https://reshop.lt/collections/ausines?limit=100'
+]
+
+file_names = [
+    'data_keyboards.csv',
+    'data_mouses.csv',
+    'data_headsets.csv'
+]
+
+
+session = HTMLSession()
+sheet = None
+
+for count, url in enumerate(urls):
+    r = session.get(url)
+    r.html.render(sleep=1)
+    sheet = fetch(r)
+    print(f"checking for changes in {file_names[count]}")
+    update(file_names[count])
+
