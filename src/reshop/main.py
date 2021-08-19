@@ -1,6 +1,7 @@
 from requests_html import HTMLSession
 import csv
 import os
+import logging
 
 
 def fetch(r):
@@ -42,13 +43,14 @@ def exportData(sheet, fileName):
         writer = csv.writer(file)
         writer.writerows(sheet)
 
-def update(file_name):
+def update(file_name, sheet):
     if os.path.isfile(file_name):
         with open(file_name, "r", encoding='utf-8-sig') as file:
             reader = csv.reader(file)
             oldSheet = []
             for line in reader:
                 oldSheet.append(line)
+            # slow algorithm
             if not isIdentical(oldSheet, sheet):
                 list_difference = [item for item in sheet if item not in oldSheet]
                 if list_difference:
@@ -65,6 +67,7 @@ urls = [
     'https://reshop.lt/collections/ausines?limit=100'
 ]
 
+# should be placed in config
 file_names = [
     'data_keyboards.csv',
     'data_mouses.csv',
@@ -73,12 +76,11 @@ file_names = [
 
 
 session = HTMLSession()
-sheet = None
 
 for count, url in enumerate(urls):
     r = session.get(url)
     r.html.render(sleep=1)
     sheet = fetch(r)
     print(f"checking for changes in {file_names[count]}")
-    update(file_names[count])
+    update(file_names[count], sheet)
 
