@@ -1,10 +1,10 @@
 from requests_html import HTMLSession
 import csv
 import os
-import logging
 import configparser
 import io
 import sys
+import logging
 
 # make a logger.
 
@@ -90,7 +90,7 @@ session = HTMLSession()
 for count, url in enumerate(urls):
     r = session.get(url)
     render_sleep = config["main"]["render_sleep"]
-    r.html.render(sleep=2)
+    r.html.render(sleep=render_sleep)
     sheet = fetch(r)
     print(f"checking for changes in {file_names[count]}")
     update(file_names[count], sheet)
