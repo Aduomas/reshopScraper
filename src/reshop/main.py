@@ -8,6 +8,11 @@ import logging
 
 # make a logger.
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+
 
 def fetch(r):
     items = r.html.xpath('//div[@id="gf-products"]/div')
@@ -24,18 +29,11 @@ def fetch(r):
 
         link = "https://reshop.lt" + item.xpath("//a/@href")[0]
 
-        # this check has been implemented in order to not raise errors with prices that have sales next to them
-        price = None
-        if (
-            price_html := item.xpath(
-                item.xpath('//span[@class="spf-product-card__price money"]/text()')
-            )
-        ) == True:  # haven't checked whether or not this worrks
-            price = price_html[0]
-        else:
-            price = item.xpath(
-                '//span[@class="spf-product-card__saleprice money"]/text()'
-            )[0]
+
+        if (price := item.xpath('//span[@class="spf-product-card__saleprice money"]/text()')):
+            price = price[0]
+        elif (price := item.xpath('//span[@class="spf-product-card__price money"]/text()')):
+            price = price[0]
 
         sheet.append([name, price, link])
     return sheet
@@ -74,7 +72,6 @@ urls = [
     "https://reshop.lt/collections/pelytes",
     "https://reshop.lt/collections/ausines?limit=100",
 ]
-print(os.getcwd())
 config = configparser.ConfigParser()
 config.read("./config/config.ini")
 
@@ -85,11 +82,16 @@ file_names = [
     config["file"]["file_headsets"],
 ]
 
+logging.info('initializing the session')
 session = HTMLSession()
 
+
 for count, url in enumerate(urls):
+    logging.info('')
+
+
     r = session.get(url)
-    render_sleep = config["main"]["render_sleep"]
+    render_sleep = int(config["main"]["render_sleep"])
     r.html.render(sleep=render_sleep)
     sheet = fetch(r)
     print(f"checking for changes in {file_names[count]}")
