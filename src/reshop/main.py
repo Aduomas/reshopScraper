@@ -14,7 +14,6 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-logger = logging.getLogger(__name__)
 
 
 def fetch(r):
