@@ -2,12 +2,8 @@ from requests_html import HTMLSession
 import csv
 import os
 import configparser
-import io
-import sys
 import logging
 import argparse
-
-# make a logger.
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,11 +24,7 @@ def fetch(r):
 
     for item in items:
         raw_name = item.xpath("//a/text()")
-        name = ""
-        for s in raw_name:
-            if s == "\n":
-                continue
-            name += s
+        name = "".join(filter(lambda n: n != "\n", raw_name))
 
         link = "https://reshop.lt" + item.xpath("//a/@href")[0]
 
@@ -75,7 +67,7 @@ def update(file_name, sheet, to_save):
     else:
         export_data(sheet, file_name)
         logging.info(f"exported data into {file_name}")
-    if to_save and oldSheet != sheet:
+    if to_save:  # will save even tho oldSheet is the same
         export_data(sheet, file_name)
         logging.info(f"exported data into {file_name}")
 
