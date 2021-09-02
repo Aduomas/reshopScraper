@@ -1,7 +1,9 @@
 ### Practise Task P1
 ## Web scraper for reshop.lt
 
-Scrapes keyboards, mouses, headsets, scans for changes if local database is available.
+# Features:
+![image](https://user-images.githubusercontent.com/23258597/131893797-59cc2494-8c9d-4b0a-b402-e1b2be4eaf20.png)
+
 
 # Use this command to clone repository
 `git clone https://github.com/Aduomas/reshopScraper/`
