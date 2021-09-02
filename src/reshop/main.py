@@ -70,6 +70,8 @@ def update(file_name, sheet, to_save):
                 list_difference = [item for item in oldSheet if item not in sheet]
                 if list_difference:
                     logging.info("removed: \n" + str(list_difference[0]))
+            else:
+                logging.info("no changes found!")
     else:
         export_data(sheet, file_name)
         logging.info(f"exported data into {file_name}")
@@ -107,7 +109,7 @@ if args.Save:
 
 
 for count, url in enumerate(urls):
-    logging.info("")
+    logging.info(f"sending a request to {url}")
 
     r = session.get(url)
     render_sleep = int(config["main"]["render_sleep"])
