@@ -9,12 +9,9 @@ Names of the files can be changed in config file.
 # Use this command to clone repository
 `git clone https://github.com/Aduomas/reshopScraper/`
 
-<<<<<<< HEAD
+
 # In order to force program to save changes use command line argument 
 `root/src/reshop/main.py -s SAVE`
-=======
-# In order to force program to save changes use command line argument `root/src/reshop/main.py -s SAVE`
->>>>>>> f9082b8... Update README.md
 
 # *important*
 
