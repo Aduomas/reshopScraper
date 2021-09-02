@@ -104,7 +104,7 @@ parser = argparse.ArgumentParser(description="Description")
 parser.add_argument("-s", "--Save", help="Save updates into the file")
 args = parser.parse_args()
 to_save = False
-if args.Save:
+if args.Save or config["main"]["always_save"]:
     to_save = True
 
 
@@ -113,7 +113,7 @@ for count, url in enumerate(urls):
 
     r = session.get(url)
     render_sleep = int(config["main"]["render_sleep"])
-    r.html.render(sleep=render_sleep)
+    r.html.render(sleep=render_sleep)  # render sleep is unnecessary
     sheet = fetch(r)
     logging.info(f"checking for changes in {file_names[count]}")
 
