@@ -2,6 +2,7 @@
 # Web scraper for reshop.lt
 
 Scrapes the website for keyboards, headsets, mouses. Scans for changes and compares it to local database. Changes are displayed in console and log file.
+Names of the files can be changed in config file.
 ![image](https://user-images.githubusercontent.com/23258597/131893797-59cc2494-8c9d-4b0a-b402-e1b2be4eaf20.png)
 
 
