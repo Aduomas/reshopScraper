@@ -51,7 +51,7 @@ def update(file_name, sheet, to_save):
             oldSheet = []
             for line in reader:
                 oldSheet.append(line)
-            # slow algorithm
+            # slow algorithm O(n^2)
             if oldSheet != sheet:
                 list_difference = [item for item in sheet if item not in oldSheet]
                 if list_difference:
@@ -102,8 +102,9 @@ for count, url in enumerate(urls):
 
     r = session.get(url)
     render_sleep = int(config["main"]["render_sleep"])
-    r.html.render(sleep=render_sleep)  # render sleep is unnecessary
+    r.html.render(sleep=render_sleep)  # sleep is unnecessary
     sheet = fetch(r)
+
     logging.info(f"checking for changes in {file_names[count]}")
 
     update(file_names[count], sheet, to_save)
