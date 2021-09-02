@@ -1,4 +1,5 @@
 from requests_html import HTMLSession
+from multiprocessing.dummy import Pool
 import csv
 import os
 import configparser
@@ -8,7 +9,15 @@ import logging
 
 # make a logger.
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(levelname)s] - %(asctime)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.FileHandler('./log/main.log', encoding='utf-8-sig'),
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
 
@@ -17,17 +26,17 @@ logger = logging.getLogger(__name__)
 def fetch(r):
     items = r.html.xpath('//div[@id="gf-products"]/div')
 
-    sheet = [["Name", "Price", "Link"]]
+    sheet = [['Name', 'Price', 'Link']]
 
     for item in items:
-        raw_name = item.xpath("//a/text()")
-        name = ""
+        raw_name = item.xpath('//a/text()')
+        name = ''
         for s in raw_name:
-            if s == "\n":
+            if s == '\n':
                 continue
             name += s
 
-        link = "https://reshop.lt" + item.xpath("//a/@href")[0]
+        link = 'https://reshop.lt' + item.xpath('//a/@href')[0]
 
 
         if (price := item.xpath('//span[@class="spf-product-card__saleprice money"]/text()')):
@@ -39,15 +48,15 @@ def fetch(r):
     return sheet
 
 
-def exportData(sheet, fileName):
-    with open(fileName, "w", newline="", encoding="utf-8-sig") as file:
+def export_data(sheet, fileName):
+    with open(fileName, 'w', newline='', encoding='utf-8-sig') as file:
         writer = csv.writer(file)
         writer.writerows(sheet)
 
 
 def update(file_name, sheet):
     if os.path.isfile(file_name):
-        with open(file_name, "r", encoding="utf-8-sig") as file:
+        with open(file_name, 'r', encoding='utf-8-sig') as file:
             reader = csv.reader(file)
             oldSheet = []
             for line in reader:
@@ -56,30 +65,28 @@ def update(file_name, sheet):
             if oldSheet != sheet:
                 list_difference = [item for item in sheet if item not in oldSheet]
                 if list_difference:
-                    print(
-                        "added: \n", list_difference[0]
-                    )  # what's new only, not what's removed tho.
+                    logging.info('added: \n'+ str(list_difference[0]))
                 list_difference = [item for item in oldSheet if item not in sheet]
                 if list_difference:
-                    print("removed: \n", list_difference[0])
+                    logging.info('removed: \n' + str(list_difference[0]))                    
     else:
-        exportData(sheet, file_name)
-        print(f"exported data into {file_name}")
+        export_data(sheet, file_name)
+        logging.info(f'exported data into {file_name}')
 
 
 urls = [
-    "https://reshop.lt/collections/klaviaturos",
-    "https://reshop.lt/collections/pelytes",
-    "https://reshop.lt/collections/ausines?limit=100",
+    'https://reshop.lt/collections/klaviaturos',
+    'https://reshop.lt/collections/pelytes',
+    'https://reshop.lt/collections/ausines?limit=100',
 ]
 config = configparser.ConfigParser()
-config.read("./config/config.ini")
+config.read('./config/config.ini')
 
 
 file_names = [
-    config["file"]["file_keyboards"],
-    config["file"]["file_mouses"],
-    config["file"]["file_headsets"],
+    config['file']['file_keyboards'],
+    config['file']['file_mouses'],
+    config['file']['file_headsets'],
 ]
 
 logging.info('initializing the session')
@@ -91,8 +98,8 @@ for count, url in enumerate(urls):
 
 
     r = session.get(url)
-    render_sleep = int(config["main"]["render_sleep"])
+    render_sleep = int(config['main']['render_sleep'])
     r.html.render(sleep=render_sleep)
     sheet = fetch(r)
-    print(f"checking for changes in {file_names[count]}")
+    logging.info(f'checking for changes in {file_names[count]}')
     update(file_names[count], sheet)
