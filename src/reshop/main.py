@@ -23,9 +23,7 @@ def fetch(r):
     sheet = [["Name", "Price", "Link"]]
 
     for item in items:
-        raw_name = item.xpath("//a/text()")
-        name = "".join(filter(lambda n: n != "\n", raw_name))
-
+        name = "".join(filter(lambda n: n != "\n", item.xpath("//a/text()")))
         link = "https://reshop.lt" + item.xpath("//a/@href")[0]
 
         if price := item.xpath(
