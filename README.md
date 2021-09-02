@@ -6,7 +6,7 @@ Scrapes keyboards, mouses, headsets, scans for changes if local database is avai
 # Use this command to clone repository
 `git clone https://github.com/Aduomas/reshopScraper/`
 
-# In order to force program to save changes use command line argument `.... main.py -s SAVE`
+# In order to force program to save changes use command line argument `root/src/reshop/main.py -s SAVE`
 
 # *important*
 
